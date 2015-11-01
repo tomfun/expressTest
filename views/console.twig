@@ -1,0 +1,18 @@
+{% extends 'layout.twig' %}
+
+{% block content %}
+  <h1>For development</h1>
+  <table>
+  {% for i,obj in stack %}
+    <tr>
+      <td><h5>{{ obj.name }}</h5></td>
+      <td>#{{ i }}</td>
+      <td><pre>{{ obj.handle }}</pre></td>
+      <td>{{ obj.regexp }}</td>
+      <td><blink>{{ obj.itself ? 'this routing now get this info' : '' }}</blink></td>
+      <td>{{ obj.my ? '<b>own routing</b>' : 'vendor' }}</td>
+      <td>{{ obj.descr }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock %}

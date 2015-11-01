@@ -2,13 +2,10 @@
 <html>
 <head>
   <title>Page Title</title>
-  <link rel="stylesheet" href="/compiled/css/general.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
   {% block scripts %}
-    <script>
-      window.twigGlobalVariables = {{ twigGlobalVariables|json_encode|raw }};
-    </script>
-    <script src="/compiled/js/require.js"></script>
-    <script src="/compiled/js/require.js.config.js"></script>
+    {#<script src="/compiled/js/require.js"></script>#}
+    {#<script src="/compiled/js/require.js.config.js"></script>#}
   {% endblock %}
 </head>
 <body>

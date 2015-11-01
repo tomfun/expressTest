@@ -19,6 +19,8 @@ var Twig = require('twig');// Twig module
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
 
+app.set('debug', app.get('env') === 'development'||  app.get('env') === 'dev');
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
