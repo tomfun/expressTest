@@ -24,22 +24,26 @@ router.post('/register', function (req, res, next) {
     if (!newUser) {
         return res.sendStatus(400);
     }
-    User.create(newUser).then(function (a,b,c) {
+    User.create(newUser).then(function (user) {
         res.json({
-            token: a.token
+            token: user.token
         });
     });
 });
 
 router.post('/login', function (req, res, next) {
-    var newUser = _.pick(req.body, ['phone', 'name', 'email', 'password']);
-    if (!newUser) {
-        return res.sendStatus(400);
-    }
-    User.create(newUser).then(function () {
-        res.json({
-            token: 'some_todo'
-        });
+    var email    = req.body.email,
+        password = req.body.password;
+    User.findOne({where: {email: email}}).then(function (user) {
+        var err;
+        if (!(err = User.verifyPassword(password, user))) {
+            res.json({
+                token: user.token
+            });
+        } else {
+            res.statusCode = 422;
+            res.json(err);
+        }
     });
 //  res.send('respond with a resource');
 });

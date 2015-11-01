@@ -5,7 +5,18 @@
         login:        {
             method: 'post',
             url:    '/api/login',
-            send:   ['email', 'password']
+            send:   ['email', 'password'],
+            scenarios: [
+                {
+                    data: ['tomfun1990@gmail.com', 'password'],
+                },
+                {
+                    data: ['ShitMail.ru', 'password'],
+                },
+                {
+                    data: ['ShitMail.ru', 'password1'],
+                }
+            ]
         },
         registration: {
             method:    'post',
@@ -69,7 +80,14 @@
             var res  = form.find('div.result'),
                 html = res.html();
             html += (html ? '<br/>' : '') + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
-                + 'ouput ' + c.status + ':  ' + c.responseText;
+                + 'output ' + c.status + ':  ' + c.responseText;
+            res.html(html);
+        }).fail(function (a, b, c) {
+            console.log(a);
+            var res  = form.find('div.result'),
+                html = res.html();
+            html += (html ? '<br/>' : '') + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
+                + 'output ' + a.status + ':  ' + (a.responseText === undefined ? '' : a.responseText);
             res.html(html);
         });
     });
