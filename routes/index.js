@@ -2,7 +2,7 @@
 
 var express = require('express');
 var _ = require('lodash');
-var router = express.Router({some: true});
+var router = express.Router();
 
 router.descr = 'This router only show information, if dev mode enabled';
 

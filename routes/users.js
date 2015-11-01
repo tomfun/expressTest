@@ -24,12 +24,11 @@ router.post('/register', function (req, res, next) {
     if (!newUser) {
         return res.sendStatus(400);
     }
-    User.create(newUser).then(function () {
+    User.create(newUser).then(function (a,b,c) {
         res.json({
-            token: 'some_todo'
+            token: a.token
         });
     });
-//  res.send('respond with a resource');
 });
 
 router.post('/login', function (req, res, next) {

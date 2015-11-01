@@ -56,9 +56,12 @@
             v = $(v);
             data[v.attr('name')] = v.val();
         });
+        var isGet = method.toLowerCase() === 'get';
         $.ajax({
             url:     form.prop('action'),
-            data:    method.toLowerCase() === 'get' ? data : JSON.stringify(data),
+            data:    isGet ? data : JSON.stringify(data),
+            dataType: isGet ? undefined : 'json',
+            contentType: isGet ? undefined : "application/json",
             method:  method,
             headers: token ? {Authorization: token} : undefined
         }).then(function (a, b, c) {
