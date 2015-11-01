@@ -1,9 +1,12 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
+var _ = require('lodash');
 var db   = app.get('db'),
     User = db.User;
 
-router.descr = 'This router work with user. Prefix for it is /users.';
+router.descr = 'This router work with user.';
 
 router.param('id', function (req, res, next, id) {
     User.findById(id).then(function (user) {
@@ -15,17 +18,35 @@ router.param('id', function (req, res, next, id) {
         }
     });
 });
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-    User.create({
-        name: 'John Hancock',
+
+router.post('/register', function (req, res, next) {
+    var newUser = _.pick(req.body, ['phone', 'name', 'email', 'password']);
+    if (!newUser) {
+        return res.sendStatus(400);
+    }
+    User.create(newUser).then(function () {
+        res.json({
+            token: 'some_todo'
+        });
     });
-    console.log(12)
-    res.json("ok#");
 //  res.send('respond with a resource');
 });
+
+router.post('/login', function (req, res, next) {
+    var newUser = _.pick(req.body, ['phone', 'name', 'email', 'password']);
+    if (!newUser) {
+        return res.sendStatus(400);
+    }
+    User.create(newUser).then(function () {
+        res.json({
+            token: 'some_todo'
+        });
+    });
+//  res.send('respond with a resource');
+});
+
 /* GET user. */
-router.get('/:id', function (req, res, next) {
+router.get('/user/:id', function (req, res, next) {
     console.log(32)
     res.json("ok@");
 //  res.send('respond with a resource');

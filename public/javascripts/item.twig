@@ -1,0 +1,14 @@
+<div class="form-wrapper">
+  {{ name }}
+  <form action="{{ url }}" method="{{ method }}">
+    {% for field in send %}
+      <label>
+        {{ field }}
+        <input name="{{ field }}">
+      </label>
+    {% endfor %}
+    <button class="send">send</button>
+    <div class="result"></div>
+  </form>
+</div>
+<hr/>

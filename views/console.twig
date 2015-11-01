@@ -1,18 +1,33 @@
 {% extends 'layout.twig' %}
 
+{% block scripts %}
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+  <script src="javascripts/twig.js"></script>
+{% endblock %}
+
+
 {% block content %}
-  <h1>For development</h1>
+  <h1>For development only</h1>
   <table>
-  {% for i,obj in stack %}
-    <tr>
-      <td><h5>{{ obj.name }}</h5></td>
-      <td>#{{ i }}</td>
-      <td><pre>{{ obj.handle }}</pre></td>
-      <td>{{ obj.regexp }}</td>
-      <td><blink>{{ obj.itself ? 'this routing now get this info' : '' }}</blink></td>
-      <td>{{ obj.my ? '<b>own routing</b>' : 'vendor' }}</td>
-      <td>{{ obj.descr }}</td>
-    </tr>
-  {% endfor %}
+    {% for i,obj in stack %}
+      <tr>
+        <td><h5>{{ obj.name }}</h5></td>
+        <td>#{{ i }}</td>
+        <td>
+          <pre>{{ obj.handle }}</pre>
+        </td>
+        <td>{{ obj.regexp }}</td>
+        <td>
+          <blink>{{ obj.itself ? 'this routing now get this info' : '' }}</blink>
+        </td>
+        <td>{{ obj.my ? '<b>own routing</b>' : 'vendor' }}</td>
+        <td>{{ obj.descr }}</td>
+      </tr>
+    {% endfor %}
   </table>
+  <hr/>
+  <h2>Test case</h2>
+  <script src="javascripts/test.js"></script>
+
 {% endblock %}
