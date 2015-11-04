@@ -3,8 +3,10 @@
 var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
-var db   = app.get('db'),
-    User = db.User;
+var db   = appGet('db'),
+    User = db.User,
+    errorConverter = appGet('errorConverter');
+console.log(errorConverter)
 
 router.descr = 'This router work with user.';
 
@@ -28,7 +30,7 @@ router.post('/register', function (req, res, next) {
         res.json({
             token: user.token
         });
-    });
+    }, errorConverter(res));
 });
 
 router.post('/login', function (req, res, next) {
@@ -41,8 +43,7 @@ router.post('/login', function (req, res, next) {
                 token: user.token
             });
         } else {
-            res.statusCode = 422;
-            res.json(err);
+            res.status(422).json(err);
         }
     });
 //  res.send('respond with a resource');

@@ -1,24 +1,60 @@
 // --- App configuration
 var path = require('path');
-var env       = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV || 'development';
+var debug = env === 'development' || env === 'dev';
 
 module.exports = {
-    db: {
+    db:       {
         database: 'test',
         username: 'test',
         password: '',
-        options: {
-            host: 'localhost',
+        options:  {
+            host:    'localhost',
             dialect: 'sqlite',//'mysql'|'mariadb'|'sqlite'|'postgres'|'mssql',
 
             pool: {
-                max: 5,
-                min: 0,
+                max:  5,
+                min:  0,
                 idle: 10000
             },
 
             storage: path.join(__dirname, 'database.sqlite'),// SQLite only
         }
     },
-    appPort: 3000,
+    security: {
+        unsecureUrls: [
+            {
+                method: 'post',
+                url:    '/api/register',
+            },
+            {
+                method: 'post',
+                url:    '/api/login',
+            },
+            {
+                method: 'get',
+                url:    '/api/user',//search users
+                query:  true,
+            },
+            {
+                method: 'get',
+                url:    '/api/item',
+                query:  true,//search goods
+            },
+            {
+                method: 'get',
+                url:    '/api/item/',// must start with "/api/item/"
+                params: true, // and may ends with some
+                query:  false, // and can't include ?...
+            },
+        ]
+    },
+    appPort:  3000,
 };
+
+if (debug) {
+    module.exports.security.unsecureUrls.push({
+        method: 'get',
+        url:    '/',//dev console
+    });
+}

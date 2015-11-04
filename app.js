@@ -6,9 +6,17 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
+var config = require('./config');
 var db = require('./models/db');
-global.app = app;
+
+var errorConverter = require('./helpers/errorConverter');
+app.set('errorConverter', errorConverter);
 app.set('db', db);
+
+//global.app = app;
+global.appGet = app.get.bind(app);
+
+var authorization = require('./helpers/authorization');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -27,64 +35,15 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var unsecureUrls = [
-    {
-        method: 'post',
-        url: '/api/register',
-    },
-    {
-        method: 'post',
-        url: '/api/login',
-    },
-    {
-        method: 'get',
-        url: '/',//search users,
-    },
-    {
-        method: 'get',
-        url: '/api/user',//search users
-        query: true,
-    },
-    {
-        method: 'get',
-        url: '/api/item',
-        query: true,//search goods
-    },
-    {
-        method: 'get',
-        url: '/api/item/',// must start with "/api/item/"
-        params: true, // and may ends with some
-        query: false, // and can't include ?...
-    },
-];
-app.use(function (req, res, next) {
-    var token = req.get('Authorization');
-    if (!token) {
+app.use(authorization(config.security.unsecureUrls, function (req, res, next, token) {
+    console.log('Token: ' + token);
+    req.getCurrentUser = function() {
+        return db.User.findOne({token: token});
+    };
+    req.currentUserToken = token;
+    return next();
+}));
 
-        var _ = require('lodash');
-        var urlData = req._parsedOriginalUrl || req._parsedUrl;
-        var isOk = _.any(_.filter(unsecureUrls, function(v) {
-            var m = v.method;
-            return !m || (m = String(m).toUpperCase()) === req.method || m === 'ANY';
-        }), function (v) {
-            if (v.url === urlData.pathname) {
-                return !urlData.search || (v.query === true && urlData.search) || (v.query === urlData.search);
-            }
-            if (urlData.pathname.indexOf(v.url) === 0) {
-                return v.params === true;
-            }
-            return false;
-        });
-        if (isOk) {
-            return next();
-        }
-        //console.log(req.originalUrl, req.params, req.query, req._parsedOriginalUrl);
-        res.status(401).send();
-    } else {
-        console.log(token);
-        return next();
-    }
-});
 app.use('/', routes);
 app.use('/api', users);
 
