@@ -3,9 +3,9 @@
 
     var testCases = {
         login:        {
-            method: 'post',
-            url:    '/api/login',
-            send:   ['email', 'password'],
+            method:    'post',
+            url:       '/api/login',
+            send:      ['email', 'password'],
             scenarios: [
                 {
                     data: ['tomfun1990@gmail.com', 'password'],
@@ -30,6 +30,25 @@
                     data: ['', 'Tamara', 'ShitMail.ru', 'password'],
                 }
             ]
+        },
+        getUser:      {
+            method:    'get',
+            url:       '/api/user/',
+            send:      ['id'],
+            addToUrls: ['id'],
+            scenarios: [
+                {
+                    data: ['1'],
+                },
+                {
+                    data: ['2'],
+                }
+            ]
+        },
+        getCurrentUser:      {
+            method:    'get',
+            url:       '/api/user/me',
+            send:      [],
         },
     };
 
@@ -62,31 +81,39 @@
             form   = it.parents('form'),
             data   = {},
             method = form.prop('method'),
-            token  = $('#global-token').val();
+            token  = $('#global-token').val(),
+            url    = form.prop('action');
         form.find('input').each(function (i, v) {
             v = $(v);
-            data[v.attr('name')] = v.val();
+            if (v.data('toUrl')) {
+                url += v.val();//v.data('-to-url');
+            } else {
+                data[v.attr('name')] = v.val();
+            }
         });
         var isGet = method.toLowerCase() === 'get';
+
         $.ajax({
-            url:     form.prop('action'),
-            data:    isGet ? data : JSON.stringify(data),
-            dataType: isGet ? undefined : 'json',
+            url:         url,
+            data:        isGet ? data : JSON.stringify(data),
+            dataType:    isGet ? undefined : 'json',
             contentType: isGet ? undefined : "application/json",
-            method:  method,
-            headers: token ? {Authorization: token} : undefined
+            method:      method,
+            headers:     token ? {Authorization: token} : undefined
         }).then(function (a, b, c) {
             console.log(a);
             var res  = form.find('div.result'),
                 html = res.html();
-            html += (html ? '<br/>' : '') + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
+            html += (html ? '<br/>' : '') + 'url: ' + url + '<br/>'
+                + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
                 + 'output ' + c.status + ':  ' + c.responseText;
             res.html(html);
         }).fail(function (a, b, c) {
             console.log(a);
             var res  = form.find('div.result'),
                 html = res.html();
-            html += (html ? '<br/>' : '') + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
+            html += (html ? '<br/>' : '')  + 'url: ' + url + '<br/>'
+                + 'input: ' + (token ? '<b>*</b> ' : '') + JSON.stringify(data) + '<br/>'
                 + 'output ' + a.status + ':  ' + (a.responseText === undefined ? '' : a.responseText);
             res.html(html);
         });

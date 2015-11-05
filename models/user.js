@@ -17,8 +17,29 @@ module.exports = function (sequelize, DataTypes) {
             },
             allowNull: false,
         },
-        name:     DataTypes.STRING,
-        phone:    DataTypes.STRING,
+        name:         {
+            type: DataTypes.STRING,
+            validate: {
+                not: {
+                    args: /^\d+$/,
+                    msg: "Name can\'t consist of numbers"
+                },
+                len: [2, 48]
+            },
+            allowNull: false,
+        },
+        phone:             {
+            type: DataTypes.STRING,
+            validate: {
+                is: {
+                    args: /^\+?\d+$/,
+                    msg: "Phone can consist of +38099xxxxxxx"
+                },
+                len: [6, 14]
+            },
+            allowNull: false,
+            scopes: ['some1'],
+        },
         password: DataTypes.STRING,
 
         token: DataTypes.STRING,

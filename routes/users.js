@@ -5,21 +5,12 @@ var router = express.Router();
 var _ = require('lodash');
 var db   = appGet('db'),
     User = db.User,
-    errorConverter = appGet('errorConverter');
-console.log(errorConverter)
+    errorConverter = appGet('errorConverter'),
+    paramConverter = appGet('paramConverter');
 
 router.descr = 'This router work with user.';
 
-router.param('id', function (req, res, next, id) {
-    User.findById(id).then(function (user) {
-        if (!user) {
-            res.status(404).send('not found user with id: ' + id);
-        } else {
-            req.user = user;
-            next();
-        }
-    });
-});
+paramConverter(router, User, 'id');
 
 router.post('/register', function (req, res, next) {
     var newUser = _.pick(req.body, ['phone', 'name', 'email', 'password']);
@@ -50,10 +41,15 @@ router.post('/login', function (req, res, next) {
 });
 
 /* GET user. */
-router.get('/user/:id', function (req, res, next) {
-    console.log(32)
-    res.json("ok@");
-//  res.send('respond with a resource');
+router.get('/user/:id(\\d+)', function (req, res, next) {
+    res.json(_.pick(req.user.get({plain: true}), ['id', 'phone', 'name', 'email']));
+});
+
+/* GET current user. */
+router.get('/user/me', function (req, res, next) {
+    req.getCurrentUser().then(function (user) {
+        res.json(_.pick(user.get({plain: true}), ['id', 'phone', 'name', 'email']));
+    });
 });
 
 module.exports = router;

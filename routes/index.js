@@ -10,7 +10,7 @@ var fingerTip = String(router);
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    if (app.get('debug')) {
+    if (appGet('debug')) {
         res.render("console", {
             stack: _.map(app._router.stack, function (v) {
                 var source = String(v.handle),

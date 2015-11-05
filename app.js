@@ -10,10 +10,12 @@ var config = require('./config');
 var db = require('./models/db');
 
 var errorConverter = require('./helpers/errorConverter');
+var paramConverter = require('./helpers/paramConverter');
 app.set('errorConverter', errorConverter);
+app.set('paramConverter', paramConverter);
 app.set('db', db);
 
-//global.app = app;
+global.app = app;
 global.appGet = app.get.bind(app);
 
 var authorization = require('./helpers/authorization');
@@ -38,7 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authorization(config.security.unsecureUrls, function (req, res, next, token) {
     console.log('Token: ' + token);
     req.getCurrentUser = function() {
-        return db.User.findOne({token: token});
+        return db.User.findOne({where: {token: token}});
     };
     req.currentUserToken = token;
     return next();

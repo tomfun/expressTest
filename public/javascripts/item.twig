@@ -3,8 +3,9 @@
   <form action="{{ url }}" method="{{ method }}" id="{{ name }}">
     {% for field in send %}
       <label>
+        {% set toUrl = addToUrls and addToUrls.indexOf(field) != -1 %}{% if toUrl %}{{ '* ' }}{% endif %}
         {{ field }}
-        <input name="{{ field }}">
+        <input name="{{ field }}"{% if toUrl %}{{ ' data-to-url="1"' }}{% endif %}>
       </label>
     {% endfor %}
     <button class="send">send</button>
