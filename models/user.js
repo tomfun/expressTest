@@ -38,9 +38,14 @@ module.exports = function (sequelize, DataTypes) {
                 len: [6, 14]
             },
             allowNull: false,
-            scopes: ['some1'],
         },
-        password: DataTypes.STRING,
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            set: function (val) {
+                return this.setDataValue('password', hasher.generate(val));
+            }
+        },
 
         token: DataTypes.STRING,
         bio:   DataTypes.STRING,

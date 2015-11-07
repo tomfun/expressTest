@@ -50,6 +50,33 @@
             url:       '/api/user/me',
             send:      [],
         },
+        changeCurrentUser:      {
+            method:    'put',
+            url:       '/api/user/me',
+            send:      ['phone', 'name', 'email', 'current_password', 'new_password'],
+            scenarios: [
+                {
+                    data: ['+3809903161210', 'George', 'tomfun1990@gmail.com', 'password', 'password'],
+                },
+                {
+                    data: ['+3809903161210', 'George', 'tomfun1990@gmail.com', 'password', 'password'],
+                }
+            ]
+        },
+        searchUser:      {
+            method:    'get',
+            url:       '/api/user',
+            send:      ['name', 'email'],
+            addToUrlsAsQuery: ['name', 'email'],
+            scenarios: [
+                {
+                    data: ['', 'tomfun1990@gmail.com'],
+                },
+                {
+                    data: ['Grigory', ''],
+                }
+            ]
+        },
     };
 
 
@@ -82,15 +109,22 @@
             data   = {},
             method = form.prop('method'),
             token  = $('#global-token').val(),
-            url    = form.prop('action');
+            url    = form.prop('action'),
+            asQuery = {};
         form.find('input').each(function (i, v) {
             v = $(v);
+            var name = v.attr('name');
             if (v.data('toUrl')) {
-                url += v.val();//v.data('-to-url');
+                url += v.val();
+            } else if (v.data('toUrlAsQuery')) {
+                asQuery[name] = v.val();
             } else {
-                data[v.attr('name')] = v.val();
+                data[name] = v.val();
             }
         });
+        if (!_.isEmpty(asQuery)) {
+            url += '?' + $.param(asQuery);
+        }
         var isGet = method.toLowerCase() === 'get';
 
         $.ajax({

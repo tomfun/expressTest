@@ -3,14 +3,17 @@
 var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
-var db   = appGet('db'),
-    User = db.User,
+var db             = appGet('db'),
+    User           = db.User,
     errorConverter = appGet('errorConverter'),
     paramConverter = appGet('paramConverter');
 
 router.descr = 'This router work with user.';
 
 paramConverter(router, User, 'id');
+var userSerializer = function (user) {
+    return _.pick(user.get({plain: true}), ['id', 'phone', 'name', 'email']);
+};
 
 router.post('/register', function (req, res, next) {
     var newUser = _.pick(req.body, ['phone', 'name', 'email', 'password']);
@@ -40,15 +43,54 @@ router.post('/login', function (req, res, next) {
 //  res.send('respond with a resource');
 });
 
-/* GET user. */
+/* GET user by id. */
 router.get('/user/:id(\\d+)', function (req, res, next) {
-    res.json(_.pick(req.user.get({plain: true}), ['id', 'phone', 'name', 'email']));
+    res.json(userSerializer(req.user));
 });
 
 /* GET current user. */
 router.get('/user/me', function (req, res, next) {
     req.getCurrentUser().then(function (user) {
-        res.json(_.pick(user.get({plain: true}), ['id', 'phone', 'name', 'email']));
+        res.json(userSerializer(user));
+    });
+});
+
+/* change current user. */
+router.put('/user/me', function (req, res, next) {
+    req.getCurrentUser().then(function (user) {
+        if (!user) {
+            return res.status(401).send();//strange behaviour
+        }
+        var curPas = req.body.current_password,
+            newPas = req.body.new_password,
+            fields = _.pick(req.body, ['phone', 'name', 'email']);
+        if (newPas !== undefined) {
+            if (!curPas) {
+                return res.send([{field: "current_password", message: "can't be empty when changing password"}]);
+            }
+            if (!User.verifyPassword(curPas, user)) {
+                return res.send([{field: "current_password", message: "is wrong"}]);
+            }
+            user.password = newPas;
+        }
+        user.set(fields).save(function () {
+            res.json(userSerializer(req.user));
+        });
+    }, errorConverter(res));
+});
+
+/* GET search users. */
+router.get('/user', function (req, res, next) {
+    var data = _.pick(req.query, ['name', 'email']),
+        where = {};
+    _.each(data, function (v, i) {
+        if (!v) {
+            return;
+        }
+        where[i] = {$like: '%' + v + '%'};
+    });
+    User.findAll({where : where}).then(function (users) {
+        res.json(_.map(users, userSerializer));
     });
 });
 

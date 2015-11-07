@@ -34,7 +34,7 @@ module.exports = {
             {
                 method: 'get',
                 url:    '/api/user',//search users
-                query:  true,
+                query:  false,//all query parameters are optional
             },
             {
                 method: 'get',

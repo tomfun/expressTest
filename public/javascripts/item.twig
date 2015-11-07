@@ -4,8 +4,10 @@
     {% for field in send %}
       <label>
         {% set toUrl = addToUrls and addToUrls.indexOf(field) != -1 %}{% if toUrl %}{{ '* ' }}{% endif %}
+        {% set toUrlAsQuery = not toUrl and addToUrlsAsQuery and addToUrlsAsQuery.indexOf(field) != -1 %}{% if toUrlAsQuery %}{{ '? ' }}{% endif %}
         {{ field }}
-        <input name="{{ field }}"{% if toUrl %}{{ ' data-to-url="1"' }}{% endif %}>
+        <input name="{{ field }}"{% if toUrl %}{{ ' data-to-url="1"' }}{% endif %}
+            {% if toUrlAsQuery %}{{ ' data-to-url-as-query="1"' }}{% endif %}>
       </label>
     {% endfor %}
     <button class="send">send</button>

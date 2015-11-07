@@ -20,8 +20,6 @@ var errorTransform = function (err) {
     return out;
 };
 var errorConverter = function (res) {
-    console.log("111")
-
     return function (err) {
         res.status(422).send(errorTransform(err));
     };
