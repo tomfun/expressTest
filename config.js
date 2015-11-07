@@ -34,7 +34,7 @@ module.exports = {
             {
                 method: 'get',
                 url:    '/api/user',//search users
-                query:  false,//all query parameters are optional
+                query:  'any',//all query parameters are optional
             },
             {
                 method: 'get',
@@ -50,6 +50,10 @@ module.exports = {
         ]
     },
     appPort:  3000,
+    autoConverter: {
+        send404: true,
+        sendBodyMessage: debug,
+    }
 };
 
 if (debug) {

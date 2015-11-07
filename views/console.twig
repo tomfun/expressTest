@@ -9,6 +9,7 @@
 
 {% block content %}
   <h1>For development only</h1>
+  <div id="routes" style="display: none;">
   <table>
     {% for i,obj in stack %}
       <tr>
@@ -26,6 +27,7 @@
       </tr>
     {% endfor %}
   </table>
+  </div>
   <hr/>
   <h2>Test cases</h2>
   <label for="global-token"><h3>enter token global:</h3></label><input id="global-token">

@@ -32,7 +32,14 @@ var paramConverter = function (router, Model, paramName, dbName, reqName) {
         query.where[dbName] = paramValue;
         Model.findOne(query).then(function (model) {
             if (!model) {
-                res.status(404).send('Auto converting: not found ' + String(Model) + ' with ' + dbName + ': ' + paramValue);
+                if (config.autoConverter.send404) {
+                    res.status(404);
+                    if (config.autoConverter.sendBodyMessage) {
+                        res.send('Auto converting: not found ' + String(Model) + ' with ' + dbName + ': ' + paramValue);
+                    } else {
+                        res.send();
+                    }
+                }
             } else {
                 if (req[reqName]) {
                     throw new Error("Auto converting: parameter: " + reqName + " already exist, you must avoid that");

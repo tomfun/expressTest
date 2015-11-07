@@ -15,34 +15,35 @@ module.exports = function (sequelize, DataTypes) {
                 //    throw new Error('Only fucked values are allowed!');
                 //}
             },
+            unique:    true,
             allowNull: false,
         },
-        name:         {
-            type: DataTypes.STRING,
-            validate: {
+        name:     {
+            type:      DataTypes.STRING,
+            validate:  {
                 not: {
                     args: /^\d+$/,
-                    msg: "Name can\'t consist of numbers"
+                    msg:  "Name can\'t consist of numbers"
                 },
                 len: [2, 48]
             },
             allowNull: false,
         },
-        phone:             {
-            type: DataTypes.STRING,
-            validate: {
-                is: {
+        phone:    {
+            type:      DataTypes.STRING,
+            validate:  {
+                is:  {
                     args: /^\+?\d+$/,
-                    msg: "Phone can consist of +38099xxxxxxx"
+                    msg:  "Phone can consist of +38099xxxxxxx"
                 },
                 len: [6, 14]
             },
             allowNull: false,
         },
         password: {
-            type: DataTypes.STRING,
+            type:      DataTypes.STRING,
             allowNull: false,
-            set: function (val) {
+            set:       function (val) {
                 return this.setDataValue('password', hasher.generate(val));
             }
         },
@@ -51,27 +52,40 @@ module.exports = function (sequelize, DataTypes) {
         bio:   DataTypes.STRING,
     }, {
         classMethods: {
-            associate: function (models) {
+            associate:      function (models) {
                 // associations can be defined here
+            },
+            verifyPassword: function (password, user) {
+                return !(user && hasher.verify(password, user.password)) && [
+                        {
+                            field:   'password',
+                            message: "Wrong email or password",
+                        }
+                    ];
+            },
+            changePassword: function (currentPassword, newPassword, user) {
+                if (User.verifyPassword(currentPassword, user)) {
+                    return [
+                        {
+                            field:   'current_password',
+                            message: "Wrong email or current_password",
+                        }
+                    ];
+                }
+                if (!newPassword) {
+                    return [{field: "new_password", message: "can't be empty when changing password"}];
+                }
+                user.password = newPassword;
+                return false;
             }
         },
         hooks:        {
             beforeCreate: function (inst, opt, fn) {
                 inst.token = randtoken.generate(16);
-                inst.password = hasher.generate(inst.password);
                 fn();
             }
         }
     });
-
-    User.verifyPassword = function (password, user) {
-        return !(user && hasher.verify(password, user.password)) && [
-                {
-                    field:   'password',
-                    message: "Wrong email or password",
-                }
-            ];
-    };
 
     return User;
 };

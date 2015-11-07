@@ -51,6 +51,9 @@ router.get('/user/:id(\\d+)', function (req, res, next) {
 /* GET current user. */
 router.get('/user/me', function (req, res, next) {
     req.getCurrentUser().then(function (user) {
+        if (!user) {
+            return res.status(401).send();//strange behaviour
+        }
         res.json(userSerializer(user));
     });
 });
@@ -65,22 +68,19 @@ router.put('/user/me', function (req, res, next) {
             newPas = req.body.new_password,
             fields = _.pick(req.body, ['phone', 'name', 'email']);
         if (newPas !== undefined) {
-            if (!curPas) {
-                return res.send([{field: "current_password", message: "can't be empty when changing password"}]);
+            var err = User.changePassword(curPas, newPas, user);
+            if (err) {
+                return res.status(422).json(err);
             }
-            if (!User.verifyPassword(curPas, user)) {
-                return res.send([{field: "current_password", message: "is wrong"}]);
-            }
-            user.password = newPas;
         }
-        user.set(fields).save(function () {
-            res.json(userSerializer(req.user));
-        });
+        user.set(fields).save().then(function () {
+            res.json(userSerializer(user));
+        }, errorConverter(res));
     }, errorConverter(res));
 });
 
 /* GET search users. */
-router.get('/user', function (req, res, next) {
+router.get(/\/user$/, function (req, res, next) {
     var data = _.pick(req.query, ['name', 'email']),
         where = {};
     _.each(data, function (v, i) {

@@ -12,7 +12,10 @@ module.exports = function (unsecureUrls, cb) {
                 return !m || (m = String(m).toUpperCase()) === req.method || m === 'ANY';
             }), function (v) {
                 if (v.url === urlData.pathname) {
-                    return !urlData.search || (v.query === true && urlData.search) || (v.query === urlData.search);
+                    return !urlData.search
+                        || (v.query === true && urlData.search)
+                        || (v.query === urlData.search)
+                        || (v.query === 'any');
                 }
                 if (urlData.pathname.indexOf(v.url) === 0) {
                     return v.params === true;

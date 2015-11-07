@@ -56,10 +56,36 @@
             send:      ['phone', 'name', 'email', 'current_password', 'new_password'],
             scenarios: [
                 {
-                    data: ['+3809903161210', 'George', 'tomfun1990@gmail.com', 'password', 'password'],
+                    data: ['+380990316128', 'Gregory', 'tomfun@gmail.com', 'password', 'password'],
                 },
                 {
                     data: ['+3809903161210', 'George', 'tomfun1990@gmail.com', 'password', 'password'],
+                }
+            ]
+        },
+        changeCurrentUserData:      {
+            method:    'put',
+            url:       '/api/user/me',
+            send:      ['phone', 'name', 'email'],
+            scenarios: [
+                {
+                    data: ['+380990316128', 'Gregory', 'tomfun@gmail.com'],
+                },
+                {
+                    data: ['+3809903161210', 'George', 'tomfun1990@gmail.com'],
+                }
+            ]
+        },
+        changeCurrentUserPassword:      {
+            method:    'put',
+            url:       '/api/user/me',
+            send:      ['current_password', 'new_password'],
+            scenarios: [
+                {
+                    data: ['password', 'password2'],
+                },
+                {
+                    data: ['password2', 'password'],
                 }
             ]
         },
@@ -107,7 +133,7 @@
         var it     = $(this),
             form   = it.parents('form'),
             data   = {},
-            method = form.prop('method'),
+            method = form.attr('method'),
             token  = $('#global-token').val(),
             url    = form.prop('action'),
             asQuery = {};
@@ -153,4 +179,11 @@
         });
     });
 
+    var routeTable = $('#routes');
+    $('body > h1').first().click(function () {
+        routeTable.slideToggle(1800);
+    }).css('cursor', 'pointer');
+    routeTable.click(function () {
+        routeTable.slideToggle(1800);
+    }).css('cursor', 'pointer').css({});
 })(jQuery, _, Twig.twig);
