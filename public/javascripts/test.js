@@ -103,6 +103,33 @@
                 }
             ]
         },
+        createItem: {
+            method:    'post',
+            url:       '/api/item',
+            send:      ['title', 'price'],
+            scenarios: [
+                {
+                    data: ['Note', '596.12'],
+                },
+                {
+                    data: ['Magesty', '10 943 $'],
+                }
+            ]
+        },
+        getItem:      {
+            method:    'get',
+            url:       '/api/item/',
+            send:      ['id'],
+            addToUrls: ['id'],
+            scenarios: [
+                {
+                    data: ['1'],
+                },
+                {
+                    data: ['2'],
+                }
+            ]
+        },
     };
 
 

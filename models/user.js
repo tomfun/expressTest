@@ -11,9 +11,6 @@ module.exports = function (sequelize, DataTypes) {
                 isEmail: {
                     msg: "Must be a email"
                 },
-                //fuck:      function (value) {
-                //    throw new Error('Only fucked values are allowed!');
-                //}
             },
             unique:    true,
             allowNull: false,
@@ -52,9 +49,8 @@ module.exports = function (sequelize, DataTypes) {
         bio:   DataTypes.STRING,
     }, {
         classMethods: {
-            associate:      function (models) {
-                // associations can be defined here
-            },
+            //associate:      function (models) {
+            //},
             verifyPassword: function (password, user) {
                 return !(user && hasher.verify(password, user.password)) && [
                         {

@@ -22,6 +22,7 @@ var authorization = require('./helpers/authorization');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var items = require('./routes/items');
 
 var Twig = require('twig');// Twig module
 
@@ -48,6 +49,7 @@ app.use(authorization(config.security.unsecureUrls, function (req, res, next, to
 
 app.use('/', routes);
 app.use('/api', users);
+app.use('/api', items);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
