@@ -130,6 +130,34 @@
                 }
             ]
         },
+        deleteItem:      {
+            method:    'delete',
+            url:       '/api/item/',
+            send:      ['id'],
+            addToUrls: ['id'],
+            scenarios: [
+                {
+                    data: ['3'],
+                },
+                {
+                    data: ['2'],
+                }
+            ]
+        },
+        searchItem:      {
+            method:    'get',
+            url:       '/api/item',
+            send:      ['title', 'user_id', 'order_by', 'order_type'],
+            addToUrlsAsQuery: ['title', 'user_id', 'order_by', 'order_type'],
+            scenarios: [
+                {
+                    data: ['', 'tomfun1990@gmail.com'],
+                },
+                {
+                    data: ['Grigory', ''],
+                }
+            ]
+        },
     };
 
 

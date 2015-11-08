@@ -39,7 +39,7 @@ module.exports = {
             {
                 method: 'get',
                 url:    '/api/item',
-                query:  true,//search goods
+                query:  'any',//search goods
             },
             {
                 method: 'get',
