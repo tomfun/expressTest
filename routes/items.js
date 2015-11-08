@@ -11,30 +11,8 @@ var db             = appGet('db'),
 router.descr = 'This router work with items.';
 
 paramConverter(router, Item, 'id');
-
-var loadCurrentUser = function (req, res, next) {
-    req.getCurrentUser().then(function (user) {
-        if (!user) {
-            res.status(403).send();
-        }
-        req.currentUser = user;
-        next();
-    }, function () {
-        res.status(403).send();
-    });
-};
-
-var itemSerializer = function (item, user) {
-    item = _.pick(item.get({plain: true}), ['id', 'created_at', 'title', 'price', 'user_id', 'user', 'image']);
-    if (!item.user) {
-        if (!user) {
-            throw new Error('user is undefined');
-        }
-        item.user = _.isPlainObject(user) ? user : user.get({plain: true});
-    }
-    item.user = _.pick(item.user, ['id', 'phone', 'name', 'email']);
-    return item;
-};
+var loadCurrentUser = appGet('loadCurrentUser');
+var itemSerializer = Item.itemSerializer;
 
 router.post('/item', loadCurrentUser, function (req, res, next) {
     var item = Item.build(_.pick(req.body, ['title', 'price']));

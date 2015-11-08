@@ -10,27 +10,91 @@
 {% block content %}
   <h1>For development only</h1>
   <div id="routes" style="display: none;">
-  <table>
-    {% for i,obj in stack %}
-      <tr>
-        <td><h5>{{ obj.name }}</h5></td>
-        <td>#{{ i }}</td>
-        <td>
-          <pre>{{ obj.handle }}</pre>
-        </td>
-        <td>{{ obj.regexp }}</td>
-        <td>
-          <blink>{{ obj.itself ? 'this routing now get this info' : '' }}</blink>
-        </td>
-        <td>{{ obj.my ? '<b>own routing</b>' : 'vendor' }}</td>
-        <td>{{ obj.descr }}</td>
-      </tr>
-    {% endfor %}
-  </table>
+    <table>
+      {% for i,obj in stack %}
+        <tr>
+          <td><h5>{{ obj.name }}</h5></td>
+          <td>#{{ i }}</td>
+          <td>
+            <pre>{{ obj.handle }}</pre>
+          </td>
+          <td>{{ obj.regexp }}</td>
+          <td>
+            <blink>{{ obj.itself ? 'this routing now get this info' : '' }}</blink>
+          </td>
+          <td>{{ obj.my ? '<b>own routing</b>' : 'vendor' }}</td>
+          <td>{{ obj.descr }}</td>
+        </tr>
+      {% endfor %}
+    </table>
   </div>
   <hr/>
   <h2>Test cases</h2>
   <label for="global-token"><h3>enter token global:</h3></label><input id="global-token">
+
   <script src="javascripts/test.js"></script>
 
+  <div class="form-wrapper">
+    <h3>upload image</h3>
+
+    <form action="/api/item/17/image" method="post" id="itemImage" enctype="multipart/form-data">
+      <label>
+        file
+        <input name="image" type="file">
+      </label>
+      <label>
+        item id
+        <input name="id" type="number">
+      </label>
+      <button class="send">send</button>
+      <button class="delete">delete</button>
+      <div class="result"></div>
+    </form>
+  </div>
+  <hr/>
+  <script>
+    (function ($) {
+      $('#itemImage [name=id]').change(function () {
+        var idInput = $(this);
+        idInput.closest('form').attr('action', "/api/item/###/image".replace('###', idInput.val()));
+      });
+
+      $('#itemImage .send').click(function (e) {
+        e.preventDefault();
+        var data  = new FormData(),
+            token = $('#global-token').val();
+        $.each($('#itemImage [name=image]')[0].files, function (i, file) {
+          data.append('file-' + i, file);
+        });
+        $.ajax({
+          url:         $(this).closest('form').attr('action'),
+          data:        data,
+          cache:       false,
+          contentType: false,
+          processData: false,
+          headers:     token ? {Authorization: token} : undefined,
+          type:        'POST',
+          success:     function (data) {
+            console.log(arguments);
+            alert(data);
+          }
+        });
+      });
+
+      $('#itemImage .delete').click(function (e) {
+        e.preventDefault();
+        var token = $('#global-token').val();
+        $.ajax({
+          url:     $(this).closest('form').attr('action'),
+          headers: token ? {Authorization: token} : undefined,
+          type:    'DELETE',
+          success: function (data) {
+            console.log(arguments);
+            alert(data);
+          }
+        });
+      });
+
+    })(jQuery);
+  </script>
 {% endblock %}

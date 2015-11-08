@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
     var User = sequelize.models.User ? sequelize.models.User : sequelize['import']('./user.js');
@@ -33,36 +34,36 @@ module.exports = function (sequelize, DataTypes) {
                 {model: User, as: 'user'}
             ]
         },
-        //scopes: {
-        //    owner: {
-        //        include: [
-        //            {model: User}
-        //        ]
-        //
-        //    }
-        //},
         classMethods: {
-            //associate: function (models) {
-            //
-            //},
+            itemSerializer: function (item, user) {
+                item = _.pick(item.get({plain: true}), [
+                    'id',
+                    'created_at',
+                    'title',
+                    'price',
+                    'user_id',
+                    'user',
+                    'image'
+                ]);
+                if (!item.user) {
+                    if (!user) {
+                        throw new Error('user is undefined');
+                    }
+                    item.user = _.isPlainObject(user) ? user : user.get({plain: true});
+                }
+                item.user = _.pick(item.user, ['id', 'phone', 'name', 'email']);
+                return item;
+            }
         },
     });
 
     Item.belongsTo(User, {
         foreignKey: {
-            name: 'user_id',
+            name:      'user_id',
             allowNull: false
         },
         as:         'user'
     });
-    //
-    //User.hasMany(Item, {
-    //    foreignKey: {
-    //        name: 'user_id',
-    //        allowNull: false
-    //    },
-    //    as: 'items'
-    //});
 
     return Item;
 };

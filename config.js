@@ -53,6 +53,11 @@ module.exports = {
     autoConverter: {
         send404: true,
         sendBodyMessage: debug,
+    },
+    uploader:{
+        destination: path.join(__dirname, 'public', 'images'),
+        base: path.resolve(path.join(__dirname, 'public')),
+        maxSize: 1024 * 1024,
     }
 };
 

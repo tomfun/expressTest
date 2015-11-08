@@ -25,4 +25,6 @@ var errorConverter = function (res) {
     };
 };
 
+errorConverter.errorTransform = errorTransform;
+
 module.exports = errorConverter;

@@ -14,6 +14,18 @@ var paramConverter = require('./helpers/paramConverter');
 app.set('errorConverter', errorConverter);
 app.set('paramConverter', paramConverter);
 app.set('db', db);
+app.set('config', config);
+app.set('loadCurrentUser', function (req, res, next) {
+    req.getCurrentUser().then(function (user) {
+        if (!user) {
+            res.status(403).send();
+        }
+        req.currentUser = user;
+        next();
+    }, function () {
+        res.status(403).send();
+    });
+});
 
 global.app = app;
 global.appGet = app.get.bind(app);
@@ -23,6 +35,7 @@ var authorization = require('./helpers/authorization');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var items = require('./routes/items');
+var itemImages = require('./routes/itemImages');
 
 var Twig = require('twig');// Twig module
 
@@ -50,6 +63,7 @@ app.use(authorization(config.security.unsecureUrls, function (req, res, next, to
 app.use('/', routes);
 app.use('/api', users);
 app.use('/api', items);
+app.use('/api', itemImages);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
