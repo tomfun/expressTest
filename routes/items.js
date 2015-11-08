@@ -66,35 +66,27 @@ router.get('/item/:id(\\d+)', /*loadCurrentUser, */function (req, res, next) {
 });
 
 
-
-/*todo change item. */
-router.put('/item/:id(\\d+)', function (req, res, next) {
-    req.getCurrentUser().then(function (user) {
-        if (!user) {
-            return res.status(401).send();//strange behaviour
-        }
-        var curPas = req.body.current_password,
-            newPas = req.body.new_password,
-            fields = _.pick(req.body, ['phone', 'name', 'email']);
-        if (newPas !== undefined) {
-            var err = User.changePassword(curPas, newPas, user);
-            if (err) {
-                return res.status(422).json(err);
-            }
-        }
-        user.set(fields).save().then(function () {
-            res.json(userSerializer(user));
+/* change item. */
+router.put('/item/:id(\\d+)', loadCurrentUser, function (req, res, next) {
+    var item = req.item;
+    if (item.getDataValue('user_id') != req.currentUser.id) {
+        return res.status(403).send();
+    }
+    item.set(_.pick(req.body, ['title', 'price']))
+        .save()
+        .then(function (item) {
+            res.json(itemSerializer(item, req.currentUser));
         }, errorConverter(res));
-    }, errorConverter(res));
+
 });
 
 /* GET search items. */
 router.get(/\/item$/, function (req, res, next) {
-    var data  = _.pick(req.query, ['order_by', 'order_type']),
-        where = {},
+    var data               = _.pick(req.query, ['order_by', 'order_type']),
+        where              = {},
         order,
         direction,
-        availableOrder = ['price', 'created_at'],
+        availableOrder     = ['price', 'created_at'],
         availableDirection = ['ASC', 'DESC'];
     order = data.order_by;
     if (availableOrder.indexOf(order) === -1) {

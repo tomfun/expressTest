@@ -158,6 +158,23 @@
                 }
             ]
         },
+        changeItem: {
+            method:    'put',
+            url:       '/api/item/',
+            send:      ['id', 'title', 'price'],
+            addToUrls: ['id'],
+            scenarios: [
+                {
+                    data: ['1', 'Car', '1119999.36'],
+                },
+                {
+                    data: ['1', 'Magesty', '10 943 $'],
+                },
+                {
+                    data: ['1', 'Note', '596.12'],
+                }
+            ]
+        },
     };
 
 
@@ -176,7 +193,7 @@
         e.preventDefault();
         var it         = $(this),
             form       = it.parents('form'),
-            data       = testCases[form.prop('id')],
+            data       = testCases[form.attr('id')],
             numb       = data.numb === undefined ? -1 : data.numb,
             dataToFill = data.scenarios[data.numb = ++numb % data.scenarios.length];
         form.find('input').each(function (i, v) {
